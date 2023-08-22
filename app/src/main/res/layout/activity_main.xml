@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2C1B4A"
+    >
+
+<!--    <Button-->
+<!--        android:id="@+id/resizeBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="84dp"-->
+<!--        android:text="Resize Image"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/resizeBtn2"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/resizeBtn2"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="84dp"-->
+<!--        android:text="Resize Image"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/frtBtn"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    <ImageView-->
+<!--        android:id="@+id/imageView"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="260dp"-->
+<!--        android:foreground="@drawable/dimming_overlay"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"/>-->
+<!--&lt;!&ndash;        app:srcCompat="@drawable/r321" &ndash;&gt;-->
+
+
+<!--    <Button-->
+<!--        android:id="@+id/crpBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="crop Image"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/widthTB"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/frtBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="85dp"-->
+<!--        android:text="Change Format"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/widthTB"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="84dp"-->
+<!--        android:ems="10"-->
+<!--        android:hint="Resize by width"-->
+<!--        android:inputType="text"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/percentTB"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/resizeBtn"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/percentTB"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="84dp"-->
+<!--        android:ems="10"-->
+<!--        android:hint="Resize by Percentage"-->
+<!--        android:inputType="text"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/frtTB"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/resizeBtn2"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--    <EditText-->
+<!--        android:id="@+id/frtTB"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="85dp"-->
+<!--        android:ems="10"-->
+<!--        android:hint="Change format"-->
+<!--        android:inputType="text"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/frtBtn"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/selBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Select Image"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/resizeBtn"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/rctBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Recent Files"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/widthTB"-->
+<!--        app:layout_constraintEnd_toStartOf="@+id/selBtn"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/crpBtn"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
+
+<!--    <Button-->
+<!--        android:id="@+id/compBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Compress"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>

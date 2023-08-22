@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2C1B4A"
+    tools:context=".CompressActivity">
+
+    <ImageView
+        android:id="@+id/comBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/group_2876" />
+
+    <ImageView
+        android:id="@+id/compImgView"
+        android:layout_width="287dp"
+        android:layout_height="275dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textVie"
+        tools:srcCompat="@tools:sample/avatars"
+        android:layout_marginTop="@dimen/_30sdp"/>
+
+
+    <TextView
+        android:id="@+id/textVie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:text="Compress image"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <CheckBox
+        android:id="@+id/autoCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="39dp"
+        android:text="Auto Compression"
+        android:textColor="#EFCB68"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/compImgView" />
+
+    <CheckBox
+        android:id="@+id/manualCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="50dp"
+        android:text="Manual Compression"
+        android:textColor="#EFCB68"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+    <ImageView
+        android:id="@+id/decPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="44dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/percentET"
+        app:layout_constraintEnd_toStartOf="@+id/percentET"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/percentET"
+        android:src="@drawable/polygon_1" />
+
+    <EditText
+        android:id="@+id/percentET"
+        android:layout_width="60dp"
+        android:layout_height="43dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/rounded_corners"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="text"
+        android:layout_marginStart="10dp"
+        android:text=""
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toEndOf="@+id/decPercent"
+        app:layout_constraintTop_toBottomOf="@+id/manualCheck" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:text="%"
+        android:textColor="#EFCB68"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/percentET"
+        app:layout_constraintStart_toEndOf="@+id/percentET"
+        app:layout_constraintTop_toTopOf="@+id/percentET" />
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:id="@+id/cpsBtn"
+        android:layout_marginBottom="26dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="@dimen/_8sdp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Compress"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:textColor="@color/primary"
+            />
+    </androidx.cardview.widget.CardView>
+<!--    <Button-->
+<!--        android:id="@+id/cpsBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="26dp"-->
+<!--        android:text="Compress"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="327dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="17dp"
+        android:text="Compress Image Without Resucing Quality (RECOMMENDED)"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="@+id/autoCheck"
+        app:layout_constraintTop_toBottomOf="@+id/autoCheck" />
+
+    <ImageView
+        android:id="@+id/imageView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/manualCheck"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView12"
+        android:src="@drawable/vector_9" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

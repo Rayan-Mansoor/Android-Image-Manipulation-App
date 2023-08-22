@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    app:cardElevation="20dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#2C1B4A">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.1"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.84" />
+
+
+<!--        <ImageView-->
+<!--            android:id="@+id/rctImg"-->
+<!--            android:layout_width="100dp"-->
+<!--            android:layout_height="150dp"-->
+<!--            android:layout_marginStart="10dp"-->
+<!--            android:background="@drawable/rounded_corners"-->
+<!--            android:scaleType="centerCrop"-->
+<!--            app:layout_constraintBottom_toTopOf="@+id/guideline3"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="@+id/guideline2"-->
+<!--            tools:srcCompat="@tools:sample/avatars" />-->
+
+        <com.example.imageresizer.RoundedCornerImageView
+            android:id="@+id/rctImg"
+            android:layout_width="100dp"
+            android:layout_height="150dp"
+            android:layout_marginStart="10dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/guideline2"
+            tools:srcCompat="@tools:sample/avatars" />
+
+
+
+
+        <TextView
+            android:id="@+id/rctName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:maxWidth="250dp"
+            android:text="ImageTitle"
+            android:textColor="#EFCB68"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/rctImg"
+            app:layout_constraintTop_toTopOf="@+id/guideline2" />
+
+        <TextView
+            android:id="@+id/rectSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="10dp"
+
+            android:ellipsize="end"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:maxLines="5"
+            android:text="ImageSize"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@+id/rctImg"
+            app:layout_constraintTop_toBottomOf="@+id/rctName" />
+
+        <TextView
+            android:id="@+id/rectDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:maxLines="5"
+            android:text="ImageDate"
+            android:textSize="12sp"
+            android:textColor="@color/white"
+            app:layout_constraintStart_toEndOf="@+id/rctImg"
+            app:layout_constraintTop_toBottomOf="@+id/rectSize" />
+
+        <ImageView
+            android:id="@+id/delBtn"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_marginStart="15dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintStart_toEndOf="@+id/shareBtn"
+            app:srcCompat="@drawable/bin" />
+
+        <ImageView
+            android:id="@+id/shareBtn"
+            android:layout_width="29dp"
+            android:layout_height="29dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintStart_toEndOf="@+id/rctImg"
+            app:srcCompat="@drawable/share" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/rctImg"
+            app:srcCompat="@drawable/vector_9" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
