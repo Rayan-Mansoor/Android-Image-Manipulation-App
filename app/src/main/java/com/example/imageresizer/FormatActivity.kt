@@ -1,129 +1,142 @@
 package com.example.imageresizer
 
-import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.MediaScannerConnection
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
+import android.provider.MediaStore
 import android.widget.CheckBox
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.imageresizer.databinding.ActivityFormatBinding
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 class FormatActivity : AppCompatActivity() {
-    private lateinit var checkboxes: List<CheckBox>
-    private lateinit var binding : ActivityFormatBinding
-    private lateinit var format : String
+
+    private lateinit var binding: ActivityFormatBinding
     private lateinit var imageUri: Uri
+    private var selectedFormat: String? = null
+    private lateinit var checkboxes: List<CheckBox>
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        binding = ActivityFormatBinding.inflate(layoutInflater)
-
         super.onCreate(savedInstanceState)
+        binding = ActivityFormatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val imageUriString = intent.getStringExtra("imageURI")
+        if (imageUriString.isNullOrEmpty()) {
+            Toast.makeText(this, "Missing image URI", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
         imageUri = Uri.parse(imageUriString)
 
-
-        checkboxes = listOf(
-            findViewById(R.id.jpgCheck),
-            findViewById(R.id.pngCheck),
-            findViewById(R.id.webpCheck)
-        )
-
-        for (checkbox in checkboxes) {
-            checkbox.setOnClickListener { onCheckboxClicked(checkbox) }
-        }
-
         binding.frtImgView.setImageURI(imageUri)
+        binding.fortBack.setOnClickListener { finish() }
 
-        binding.fortBack.setOnClickListener {
-            finish()
-        }
-    }
-
-    private fun onCheckboxClicked(clickedCheckbox: CheckBox) {
-        for (checkbox in checkboxes) {
-            if (checkbox != clickedCheckbox) {
-                checkbox.isChecked = false
-            }
-        }
-
-        // Perform actions based on the checked checkbox
-        when (clickedCheckbox.id) {
-            R.id.jpgCheck -> {
-                // Checkbox 1 is checked
-                format = "jpeg"
-            }
-            R.id.pngCheck -> {
-                // Checkbox 2 is checked
-                format = "png"
-            }
-            R.id.webpCheck -> {
-                // Checkbox 3 is checked
-                format = "webp"
-            }
+        checkboxes = listOf(binding.jpgCheck, binding.pngCheck, binding.webpCheck)
+        checkboxes.forEach { cb ->
+            cb.setOnClickListener { onCheckboxClicked(cb) }
         }
 
         binding.frtBtn.setOnClickListener {
-            convertAndSaveImage(applicationContext,imageUri, format)
+            val fmt = selectedFormat
+            if (fmt.isNullOrBlank()) {
+                Toast.makeText(this, "Please select a format", Toast.LENGTH_SHORT).show()
+            } else {
+                convertAndSaveImage(applicationContext, imageUri, fmt)
+            }
         }
+    }
 
+    private fun onCheckboxClicked(clicked: CheckBox) {
+        checkboxes.forEach { cb -> if (cb != clicked) cb.isChecked = false }
+        selectedFormat = when (clicked.id) {
+            R.id.jpgCheck -> "jpeg"
+            R.id.pngCheck -> "png"
+            R.id.webpCheck -> "webp"
+            else -> null
+        }
+    }
 
-
-
+    private fun computeInSampleSize(
+        srcW: Int,
+        srcH: Int,
+        reqW: Int,
+        reqH: Int
+    ): Int {
+        var inSampleSize = 1
+        if (srcH > reqH || srcW > reqW) {
+            var halfH = srcH / 2
+            var halfW = srcW / 2
+            while ((halfH / inSampleSize) >= reqH && (halfW / inSampleSize) >= reqW) {
+                inSampleSize *= 2
+            }
+        }
+        return inSampleSize
     }
 
     fun convertAndSaveImage(context: Context, imageUri: Uri, outputFormat: String) {
-        val contentResolver: ContentResolver = context.contentResolver
-        val inputStream = contentResolver.openInputStream(imageUri)
+        val cr = context.contentResolver
 
-        // Decode the image file into a Bitmap
-        val bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
+        // 1) Probe dimensions only
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        cr.openInputStream(imageUri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
 
-        // Get the original image format
-        val originalFormat: String? = contentResolver.getType(imageUri)
+        // 2) Downsample if ridiculously large (tune maxDim to your liking)
+        val maxDim = 3000
+        val inSample = computeInSampleSize(bounds.outWidth, bounds.outHeight, maxDim, maxDim)
 
-        // Convert the image format to the desired format
-        val outputFileExtension = outputFormat.substringAfterLast('.')
-        val compressFormat = when (outputFileExtension) {
-            "jpeg", "jpg" -> Bitmap.CompressFormat.JPEG
-            "png" -> Bitmap.CompressFormat.PNG
-            "webp" -> Bitmap.CompressFormat.WEBP
-            else -> Bitmap.CompressFormat.JPEG // Default to JPEG if the desired format is not recognized
+        // 3) Decode (downsampled if needed)
+        val decode = BitmapFactory.Options().apply {
+            inSampleSize = inSample
+            inPreferredConfig = Bitmap.Config.ARGB_8888
+        }
+        val bmp = cr.openInputStream(imageUri)?.use { BitmapFactory.decodeStream(it, null, decode) }
+        if (bmp == null) {
+            Toast.makeText(context, "Decode failed", Toast.LENGTH_SHORT).show()
+            return
         }
 
-        // Create a new file to save the converted image
-        val outputDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val outputFileName = "ImgResizer_$timeStamp.$outputFileExtension"
-        val outputFile = File(outputDir, outputFileName)
+        // 4) Choose compress format + quality
+        val (format, mime, quality) = when (outputFormat.lowercase(Locale.US)) {
+            "jpeg", "jpg" -> Triple(Bitmap.CompressFormat.JPEG, "image/jpeg", 85)
+            "png" -> Triple(Bitmap.CompressFormat.PNG, "image/png", 100) // lossless, bigger
+            "webp" -> Triple(Bitmap.CompressFormat.WEBP, "image/webp", 80)
+            else -> Triple(Bitmap.CompressFormat.JPEG, "image/jpeg", 85)
+        }
 
+        // 5) Save via MediaStore
+        val displayName = "ImgResizer_${System.currentTimeMillis()}.${
+            when (outputFormat.lowercase(Locale.US)) {
+                "jpg" -> "jpg"
+                "jpeg" -> "jpeg"
+                "png" -> "png"
+                "webp" -> "webp"
+                else -> "jpeg"
+            }
+        }"
+
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
+            put(MediaStore.Images.Media.MIME_TYPE, mime)
+        }
+
+        val outUri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
         try {
-            val outputStream = FileOutputStream(outputFile)
-
-            // Compress and save the bitmap with the desired format
-            bitmap.compress(compressFormat, 100, outputStream)
-            outputStream.flush()
-            outputStream.close()
-
-            // Notify the media scanner about the new image
-            MediaScannerConnection.scanFile(context, arrayOf(outputFile.absolutePath), null, null)
+            outUri?.let { uri ->
+                cr.openOutputStream(uri)?.use { os ->
+                    bmp.compress(format, quality, os)
+                }
+                Toast.makeText(context, "Image saved to gallery", Toast.LENGTH_SHORT).show()
+                finish()
+            } ?: Toast.makeText(context, "Save failed", Toast.LENGTH_SHORT).show()
         } catch (e: IOException) {
             e.printStackTrace()
+            Toast.makeText(context, "Save failed", Toast.LENGTH_SHORT).show()
         }
-        Toast.makeText(applicationContext,"Image saved to gallery",Toast.LENGTH_SHORT).show()
-        finish()
     }
-
 }

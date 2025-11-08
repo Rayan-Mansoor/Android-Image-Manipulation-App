@@ -1,180 +1,106 @@
 package com.example.imageresizer
 
 import android.app.Activity
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.graphics.Point
-import android.media.ExifInterface
-import android.media.MediaScannerConnection
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
-import android.view.WindowManager
-import android.webkit.MimeTypeMap
-import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.FutureTarget
-import com.example.imageresizer.databinding.ActivityMainBinding
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.example.imageresizer.CropperActivity
 import com.example.imageresizer.databinding.HomePageBinding
-import com.theartofdev.edmodo.cropper.CropImage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.ArrayList
-import java.util.Date
-import java.util.Locale
 
-const val TAG = "MainActivity"
+private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding : HomePageBinding
-    private val SELECT_IMAGE_REQUEST = 1
+    private lateinit var binding: HomePageBinding
+    private lateinit var imageURI: Uri
+    private var actionKey: String = ""
 
-    private lateinit var imgView :ImageView
+    /** Cropper launcher (our custom CropperActivity) */
+    private val cropperActivityLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // CropperActivity already saved the image to MediaStore and returns its Uri
+                val cropped = result.data?.data
+                if (cropped != null) {
+                    Toast.makeText(this, "Image saved to gallery", Toast.LENGTH_SHORT).show()
+                    // If you want to pass this Uri to another screen, do it here.
+                    // e.g., startActivity(Intent(this, NextActivity::class.java).setData(cropped))
+                }
+            } else {
+                val error = result.data?.getStringExtra("error")
+                if (!error.isNullOrBlank()) {
+                    Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Crop canceled", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
 
-    private lateinit var bitmap: FutureTarget<Bitmap>
-    private lateinit var imageURI : Uri
-    private var check = ""
+    /** Gallery picker */
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri == null) return@registerForActivityResult
+            imageURI = uri
+
+            when (actionKey) {
+                "converter" -> {
+                    startActivity(Intent(this, FormatActivity::class.java).putExtra("imageURI", uri.toString()))
+                }
+                "resizer" -> {
+                    startActivity(Intent(this, ResizeActivity::class.java).putExtra("imageURI", uri.toString()))
+                }
+                "compresser" -> {
+                    startActivity(Intent(this, CompressActivity::class.java).putExtra("imageURI", uri.toString()))
+                }
+                "cropper" -> startCustomCrop(uri, square = false)
+                "SQcropper" -> startCustomCrop(uri, square = true)
+            }
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = HomePageBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-        binding.convBtn.setOnClickListener {
-            check = "converter"
-            selectImageFromGallery()
-        }
-
-        binding.crpBtn.setOnClickListener {
-            check = "cropper"
-            selectImageFromGallery()
-        }
-
-        binding.sqCrpBtn.setOnClickListener {
-            check = "SQcropper"
-            selectImageFromGallery()
-        }
-
-        binding.resizeBtn.setOnClickListener {
-            check = "resizer"
-            selectImageFromGallery()
-        }
-
-        binding.rctBtn.setOnClickListener {
-            startActivity(Intent(this,RecentFiles::class.java))
-        }
-
-        binding.compBtn.setOnClickListener {
-            check = "compresser"
-            selectImageFromGallery()
-        }
+        binding.convBtn.setOnClickListener { actionKey = "converter";   pickImage() }
+        binding.crpBtn.setOnClickListener  { actionKey = "cropper";     pickImage() }
+        binding.sqCrpBtn.setOnClickListener{ actionKey = "SQcropper";   pickImage() }
+        binding.resizeBtn.setOnClickListener{actionKey = "resizer";     pickImage() }
+        binding.compBtn.setOnClickListener { actionKey = "compresser";  pickImage() }
+        binding.rctBtn.setOnClickListener  { startActivity(Intent(this, RecentFiles::class.java)) }
     }
 
-    private fun selectImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, SELECT_IMAGE_REQUEST)
+    private fun pickImage() = pickImageLauncher.launch("image/*")
+
+    /** Launch our own CropperActivity (with explicit Cancel/Done buttons) */
+    private fun startCustomCrop(uri: Uri, square: Boolean) {
+        val intent = Intent(this, CropperActivity::class.java)
+            .putExtra(CropperActivity.EXTRA_IMAGE_URI, uri.toString())
+            .putExtra(CropperActivity.EXTRA_SQUARE, square)
+        cropperActivityLauncher.launch(intent)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SELECT_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            imageURI = data.data!!
-
-
-            if (check == "converter"){
-                val intent = Intent(this,FormatActivity::class.java)
-                intent.putExtra("imageURI", imageURI.toString())
-                startActivity(intent)
-            }
-
-            else if (check == "cropper"){
-                startCropActivity(imageURI)
-            }
-
-            else if (check == "SQcropper"){
-                startSquareCropActivity(imageURI)
-            }
-
-            else if (check == "resizer"){
-                val intent = Intent(this,ResizeActivity::class.java)
-                intent.putExtra("imageURI", imageURI.toString())
-                startActivity(intent)
-            }
-
-            else if (check == "compresser"){
-                val intent = Intent(this,CompressActivity::class.java)
-                intent.putExtra("imageURI", imageURI.toString())
-                startActivity(intent)
-            }
-
-
-        }
-
-        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-            val result = CropImage.getActivityResult(data)
-            if (resultCode == RESULT_OK) {
-                val resultUri = result.uri;
-                saveImageToGallery(applicationContext, resultUri)
-            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                val error = result.error;
-            }
-        }
-
-    }
-
-
-
-
-    private val REQUEST_CODE_CROP = 100
-
-    private fun startCropActivity(imageUri: Uri) {
-        CropImage.activity(imageUri).start(this);
-    }
-
-    private fun startSquareCropActivity(imageUri: Uri) {
-        CropImage.activity(imageUri).setFixAspectRatio(true).start(this);
-    }
-
+    /** Kept for other flows that might need a gallery copy from an existing Uri */
     fun saveImageToGallery(context: Context, imageUri: Uri) {
-        val contentResolver = context.contentResolver
-
-        // Create a ContentValues object to hold the image details
+        val cr = context.contentResolver
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, "ImgResizer_${System.currentTimeMillis()}.jpg")
             put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
-            put(MediaStore.Images.Media.WIDTH, 0)  // Set to 0 to use the original image width
-            put(MediaStore.Images.Media.HEIGHT, 0) // Set to 0 to use the original image height
+            put(MediaStore.Images.Media.WIDTH, 0)
+            put(MediaStore.Images.Media.HEIGHT, 0)
         }
-
-        // Insert the image details into the MediaStore
-        val imageUriResult = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-
-        // Open an output stream for the image URI and copy the image data
-        imageUriResult?.let { resultUri ->
-            contentResolver.openOutputStream(resultUri)?.use { outputStream ->
-                contentResolver.openInputStream(imageUri)?.use { inputStream ->
-                    inputStream.copyTo(outputStream)
-                }
+        val outUri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+        outUri?.let { dest ->
+            cr.openOutputStream(dest)?.use { os ->
+                cr.openInputStream(imageUri)?.use { ins -> ins.copyTo(os) }
                 Toast.makeText(context, "Image saved to gallery", Toast.LENGTH_SHORT).show()
             }
         }
     }
-
 }

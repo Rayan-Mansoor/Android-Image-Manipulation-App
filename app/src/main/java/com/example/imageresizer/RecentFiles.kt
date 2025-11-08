@@ -13,7 +13,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-const val TAG2 = "RecentFilesActivity"
+private const val TAG = "RecentFiles"
 
 class RecentFiles : AppCompatActivity() {
     private lateinit var binding : ActivityRecentFilesBinding
@@ -30,7 +30,7 @@ class RecentFiles : AppCompatActivity() {
         filesList = ArrayList()
 
 
-        Log.d(TAG2,"Im here")
+        Log.d(TAG,"Im here")
 
 
         val selection = "${MediaStore.Images.Media.DISPLAY_NAME} LIKE ? COLLATE NOCASE"
@@ -46,11 +46,11 @@ class RecentFiles : AppCompatActivity() {
 
         )
 
-        Log.d(TAG2,"Im here2")
+        Log.d(TAG,"Im here2")
 
         val sortOrder = "${MediaStore.Images.Media.DATE_MODIFIED} DESC"
 
-        Log.d(TAG2,"Im here3")
+        Log.d(TAG,"Im here3")
 
         val cursor = contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -60,7 +60,7 @@ class RecentFiles : AppCompatActivity() {
             sortOrder
         )
 
-        Log.d(TAG2,"Im here4")
+        Log.d(TAG,"Im here4")
 
         cursor?.use { cursor ->
             val pathColumnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
@@ -90,7 +90,7 @@ class RecentFiles : AppCompatActivity() {
 
             }
         }
-        Log.d(TAG2,filesList.toString())
+        Log.d(TAG,filesList.toString())
 
         imgadapter = RCVadapter(filesList)
         binding.imgrcv.adapter = imgadapter
